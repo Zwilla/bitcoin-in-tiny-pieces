@@ -2,7 +2,7 @@
 
 These are Python scripts made from scracth to play with Bitcoin addresses: public, private, WIF...
 
-The scripts are compatible with Python 2 and Python 3.
+The scripts are compatible with Python 3.
 
 ## before start
 

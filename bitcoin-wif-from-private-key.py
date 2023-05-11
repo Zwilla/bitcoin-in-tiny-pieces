@@ -13,17 +13,17 @@ from re import match
 
 privkey = ''
 # See 'compressed form' at https://en.bitcoin.it/wiki/Protocol_documentation#Signatures
-COMPRESS_PUBKEY = 2 # 0: uncompressed, 1: compressed, 2: print both!
+COMPRESS_PUBKEY = 2  # 0: uncompressed, 1: compressed, 2: print both!
 
 VERBOSE = True
 
 line = ''
 
 # try to read parameters or stdin if they exist (in this order)
-if (len(privkey)==0):
+if len(privkey) == 0:
 
     # read parameters from cmdline
-    if ( len(sys.argv) >= 2 ):
+    if len(sys.argv) >= 2:
         line = sys.argv[1]
     else:
         # tries to read stdin
@@ -35,42 +35,48 @@ if (len(privkey)==0):
 
     # compose privkey from data read
     m = match(r'(?:0x)?(?:80)?([a-fA-F0-9]{1,64})L?', line)
-    if ( m is not None ):
+    if m is not None:
         privkey = '80' + m.group(1)
     else:
-        if (VERBOSE): print("\n./bitcoin-wif-from-private-key [80][64 hex]\n")
+        if VERBOSE:
+            print("\n./bitcoin-wif-from-private-key [80][64 hex]\n")
         exit(1)
 
-if (VERBOSE): print ('privkey = ' + privkey)
+if VERBOSE:
+    print('privkey = ' + privkey)
 
 compress_pubkey = COMPRESS_PUBKEY
-if (COMPRESS_PUBKEY == 2):
+if COMPRESS_PUBKEY == 2:
     compress_pubkey = 1
 
-while (compress_pubkey <= COMPRESS_PUBKEY):
+while compress_pubkey <= COMPRESS_PUBKEY:
 
     key = privkey
 
-    if (compress_pubkey==1):
-        if (VERBOSE): print ("\nFor compressed public key:")
+    if compress_pubkey == 1:
+        if VERBOSE:
+            print("\nFor compressed public key:")
         key += '01'
     else:
-        if (VERBOSE): print ("\nFor uncompressed public key:")
+        if VERBOSE:
+            print("\nFor uncompressed public key:")
 
     # Obtain signature:
 
     sha = hashlib.sha256()
-    sha.update( bytearray.fromhex(key) )
+    sha.update(bytearray.fromhex(key))
     checksum = sha.digest()
     sha = hashlib.sha256()
     sha.update(checksum)
     checksum = sha.hexdigest()[0:8]
 
-    if (VERBOSE): print ( "checksum = \t" + sha.hexdigest() )
+    if VERBOSE:
+        print("checksum = \t" + sha.hexdigest())
 
-    if (VERBOSE): print ( "key + checksum = \t" + key + ' ' + checksum )
-    if (VERBOSE): 
-        sys.stdout.write ( "bitcoin address = \t" )
-    print ( (base58.b58encode( bytes(bytearray.fromhex(key + checksum)) )).decode('utf-8') )
+    if VERBOSE:
+        print("key + checksum = \t" + key + ' ' + checksum)
+    if VERBOSE:
+        sys.stdout.write("bitcoin address = \t")
+    print((base58.b58encode(bytes(bytearray.fromhex(key + checksum)))).decode('utf-8'))
 
-    compress_pubkey+=1
+    compress_pubkey += 1
